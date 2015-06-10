@@ -40,13 +40,18 @@ public class LaunchMyApp extends CordovaPlugin {
                     JSONObject jsonObject = new JSONObject(notificationContent);
                     if (PUSH_NOTIFICATION_CLICK.equals(jsonObject.getString("type"))) {
                         Log.d(TAG, "notificationContent " + jsonObject);
-                        callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK, jsonObject));
-                        return true;
+                        String url = jsonObject.getString("data");
+                        if (url != null && !url.isEmpty()) {
+                            callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK, url.replace("\\", "")));
+                            return true;
+                        }
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                return true;
+                intent.removeExtra(PushConstants.EXTRA_NOTIFICATION_CONTENT);
+                intent.removeExtra(PushConstants.EXTRA_NOTIFICATION_TITLE);
+                return false;
             } else {
                 callbackContext.error("App was not started via the launchmyapp URL scheme. Ignoring this errorcallback is the best approach.");
                 return false;
