@@ -30,7 +30,8 @@ public class LaunchMyApp extends CordovaPlugin {
 
             final Intent intent = ((CordovaActivity) this.webView.getContext()).getIntent();
             final String notificationContent = intent.getStringExtra(PushConstants.EXTRA_NOTIFICATION_CONTENT);
-            if (intent.getDataString() != null) {
+            final String intentString = intent.getDataString();
+            if (intentString != null && intentString.contains("://") && intent.getScheme() != null) {
                 Log.d(TAG, "getDataString " + intent.getDataString());
                 callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK, intent.getDataString()));
                 intent.setData(null);
@@ -65,7 +66,7 @@ public class LaunchMyApp extends CordovaPlugin {
     @Override
     public void onNewIntent(Intent intent) {
         final String intentString = intent.getDataString();
-        if (intentString != null && intentString.contains("://")) {
+        if (intentString != null && intentString.contains("://") && intent.getScheme() != null) {
             intent.setData(null);
             try {
                 StringWriter writer = new StringWriter(intentString.length() * 2);
